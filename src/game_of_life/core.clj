@@ -36,14 +36,23 @@
                     (and (= cell 0) (= live-neighbors 3)) 1
                     :else 0)))))))
 
-;; Draw the grid w/ Quil
+      ;; Function to draw the grid with different colors based on neighbor count
 (defn draw-grid [grid]
   (q/background 255) ;; White background
   (doseq [x (range height)
           y (range width)]
-    (when (= 1 (get-in grid [x y]))
-      (q/fill 0) ;; Black color for live cells
-      (q/rect (* y cell-size) (* x cell-size) cell-size cell-size))))
+    (let [cell (get-in grid [x y])
+          live-neighbors (count-live-neighbors grid x y)]
+      (when (= cell 1)
+
+        ;; Set the color based on the number of live neighbors
+        (cond
+          (<= live-neighbors 1) (q/fill 255 0 0)  ;; Red for 1 or less neighbors
+          (= live-neighbors 2) (q/fill 255 0 0)   ;; Red for 2 neighbors
+          (= live-neighbors 3) (q/fill 255 165 0) ;; Orange for 3 neighbors
+          (>= live-neighbors 4) (q/fill 0 255 0)  ;; Green for 4 neighbors
+          :else (q/fill 0 0 0))                   ;; Black for other cases
+        (q/rect (* y cell-size) (* x cell-size) cell-size cell-size)))))
 
 ;; Setup Quil
 (defn setup []
